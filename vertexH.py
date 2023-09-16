@@ -8,7 +8,7 @@ from spa import SuccessiveProj
 
 N = 1000
 K = 3
-def runif_in_simplex(n, vertex, sigma=1):
+def runif_in_simplex(n, vertex, sigma=0.1):
   ''' Return uniformly random vector in the n-simplex '''
 
   k = np.random.exponential(scale=1.0, size=n)
@@ -21,8 +21,9 @@ def get_sample(N_sample, vertex):
 
 def plot_simplex(vertex,samples):
     vertex_t = np.transpose(vertex)
+    vertex_t = np.concatenate((vertex_t,vertex_t[0].reshape(1,-1)),axis=0)
     plt.scatter(samples[:,0], samples[:,1], s=0.3, label="original sample")
-    plt.scatter(vertex_t[:,0], vertex_t[:,1], c="r", label="true vertices")
+    plt.plot(vertex_t[:,0], vertex_t[:,1], "r--", marker='o', label="true vertices")
     #plt.show()
 
 
@@ -37,7 +38,7 @@ def max_pairwise_distance(arr):
     return max_distance
 
 
-def knn(samples,M=50,N_n=3):
+def knn(samples,M=30,N_n=3):
     l_max = max_pairwise_distance(samples)
     eps = l_max/M
     return eps
@@ -63,16 +64,19 @@ if __name__ == '__main__':
 
     vertex=np.array([[1,2,5],[1,4,2]])
     samples = get_sample(N_sample = N, vertex=vertex)
+    np.save('my_array.npy', samples)
     eps = knn(samples)
     print(eps)
     X_tilde = points_within_epsilon(samples,eps)
     vertices_knn = SuccessiveProj(X_tilde,K)
+    vertices_knn = np.concatenate((vertices_knn, vertices_knn[0].reshape(1,-1)),axis=0)
     vertices_spa = SuccessiveProj(samples,K)
+    vertices_spa = np.concatenate((vertices_spa, vertices_spa[0].reshape(1,-1)),axis=0)
     plot_simplex(vertex, samples)
-    plt.scatter(vertices_knn[:,0], vertices_knn[:,1],c="blue",label="KNN-SPA reconstruction")
-    plt.scatter(vertices_spa[:,0], vertices_spa[:,1],c="green",label="SPA reconstruction")
+    plt.plot(vertices_knn[:,0], vertices_knn[:,1],"b--", marker='o',label="KNN-SPA reconstruction")
+    plt.plot(vertices_spa[:,0], vertices_spa[:,1],"g--", marker='o',label="SPA reconstruction")
     plt.legend()
-    plt.title("Sigma = 1")
+    plt.title("Sigma = 0.1")
     plt.show()
 # plot_simplex(vertex=np.array([[1,2,5],[1,4,2]]))
 # Example usage:
