@@ -7,6 +7,7 @@ import seaborn as sns
 from projection import get_projected_points
 
 import numpy as np
+import pandas as pd
 
 
 "---------------------------- SIMULATION DIMENSION ------------------------------------"
@@ -177,7 +178,7 @@ def N_simulation(vertex,N_range,d=4,S=1):
 
 "---------------------------- SIMULATION ESTIMATING VARIANCE ------------------------------------"
 
-def estimator_var(vertex,S_range,N_sample=1000,d=4):
+def estimator_var(vertex,S_range,N_sample=5000,d=10):
     K = vertex.shape[1]
     var_diff = []
     A = np.random.randint(2,size=(d,2))
@@ -193,39 +194,68 @@ def estimator_var(vertex,S_range,N_sample=1000,d=4):
     plt.ylabel("|sigma - sigma_hat|")
     plt.grid()
     plt.show()
+
+
+"---------------------------- SIMULATION MEAN CHI2 ------------------------------------"
+
+def max_chi2(d_range,N=1000,N_iter=500):
+    
+    M = []
+    df = pd.DataFrame({"df":[], "M_n":[]})
+    for i, d in enumerate(d_range):
+
+        sample = np.random.chisquare(df=d,size=(N_iter,N))
+        M_n = np.mean(np.max(sample,axis=1))
+        M.append(round(M_n,2))
+        df1 = pd.DataFrame({"df":d, "M_n":round(M_n,2)},index=[i])
+        df = pd.concat([df,df1])
+
+    df.T.to_csv("Results-experiments/table_chi2.csv",header=False)
+    plt.plot(d_range,M,"-o")
+    plt.xlabel("Df")
+    plt.ylabel("M_n")
+    plt.axhline(y = 2*np.log(N), color = 'r', linestyle = '-',label="2.log(1000)")
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+"-----------------------------------------------------------------------------------"
+
 if __name__ == '__main__':
     N_range = np.arange(500,2000,100)
     D_range = np.arange(2,10)
     S_range = np.linspace(0.2,2,20)
     vertex = np.array([[1,2,5],[1,4,2]])
-    error_knn_d, error_spa_d, error_proj_d, error_proj_knn_d = d_simulation(vertex)
-    error_knn_s, error_spa_s, error_proj_s, error_proj_knn_s = sigma_simulation(vertex,S_range)
-    error_knn_n, error_spa_n, error_proj_n, error_proj_knn_n = N_simulation(vertex,N_range)
+    d_range = [2, 4, 6, 8, 10, 12]
+    max_chi2(d_range = d_range)
+    # error_knn_d, error_spa_d, error_proj_d, error_proj_knn_d = d_simulation(vertex)
+    # error_knn_s, error_spa_s, error_proj_s, error_proj_knn_s = sigma_simulation(vertex,S_range)
+    # error_knn_n, error_spa_n, error_proj_n, error_proj_knn_n = N_simulation(vertex,N_range)
 
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10,3))
-    ax1.plot(D_range,error_knn_d,"-o",label = "KNN-SPA")
-    ax1.plot(D_range,error_spa_d,"-o",label = "SPA")
-    ax1.plot(D_range,error_proj_d,"-o",label = "P-SPA")
-    ax1.plot(D_range,error_proj_knn_d,"-o",label = "P-KNN-SPA")
-    ax1.set_xlabel("Dimension (d)")
+    # fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10,3))
+    # ax1.plot(D_range,error_knn_d,"-o",label = "KNN-SPA")
+    # ax1.plot(D_range,error_spa_d,"-o",label = "SPA")
+    # ax1.plot(D_range,error_proj_d,"-o",label = "P-SPA")
+    # ax1.plot(D_range,error_proj_knn_d,"-o",label = "P-KNN-SPA")
+    # ax1.set_xlabel("Dimension (d)")
 
-    ax2.plot(S_range,error_knn_s,"-o",label = "KNN-SPA")
-    ax2.plot(S_range,error_spa_s,"-o",label = "SPA")
-    ax2.plot(S_range,error_proj_s,"-o",label = "P-SPA")
-    ax2.plot(S_range,error_proj_knn_s,"-o",label = "P-KNN-SPA")
-    ax2.set_xlabel("Noise level (sigma)")
+    # ax2.plot(S_range,error_knn_s,"-o",label = "KNN-SPA")
+    # ax2.plot(S_range,error_spa_s,"-o",label = "SPA")
+    # ax2.plot(S_range,error_proj_s,"-o",label = "P-SPA")
+    # ax2.plot(S_range,error_proj_knn_s,"-o",label = "P-KNN-SPA")
+    # ax2.set_xlabel("Noise level (sigma)")
 
-    ax3.plot(N_range,error_knn_n,"-o",label = "KNN-SPA")
-    ax3.plot(N_range,error_spa_n,"-o",label = "SPA")
-    ax3.plot(N_range,error_proj_n,"-o",label = "P-SPA")
-    ax3.plot(N_range,error_proj_knn_n,"-o",label = "P-KNN-SPA")
-    ax3.legend()
-    ax3.set_xlabel("Sample size (n)")
+    # ax3.plot(N_range,error_knn_n,"-o",label = "KNN-SPA")
+    # ax3.plot(N_range,error_spa_n,"-o",label = "SPA")
+    # ax3.plot(N_range,error_proj_n,"-o",label = "P-SPA")
+    # ax3.plot(N_range,error_proj_knn_n,"-o",label = "P-KNN-SPA")
+    # ax3.legend()
+    # ax3.set_xlabel("Sample size (n)")
 
-    fig.text(0.0001, 0.5, 'Reconstruction error', va='center', rotation='vertical')
-    plt.tight_layout()
-    plt.savefig("Experiments_subplots.png")
-    plt.show()
+    # fig.text(0.0001, 0.5, 'Reconstruction error', va='center', rotation='vertical')
+    # plt.tight_layout()
+    # plt.savefig("Experiments_subplots.png")
+    # plt.show()
 
 
 
