@@ -9,6 +9,7 @@ from projection import get_projected_points
 import numpy as np
 import pandas as pd
 
+M_ = 5
 
 "---------------------------- SIMULATION DIMENSION ------------------------------------"
 
@@ -25,8 +26,8 @@ def d_simulation(vertex,D=10,S=1,N_sample=1000):
             samples +=  np.random.normal(scale=S, size=(d,N_sample))
 
             samples_ = get_projected_points(samples)
-            eps_proj = find_max_distance_to_average(np.transpose(samples_))/5
-            eps_knn = find_max_distance_to_average(np.transpose(samples))/5
+            eps_proj = find_max_distance_to_average(np.transpose(samples_))/M_
+            eps_knn = find_max_distance_to_average(np.transpose(samples))/M_
             X_proj_knn = compute_points_within_epsilon(np.transpose(samples_),epsilon=eps_proj,N=4,t=3,d=d)
             X_knn = compute_points_within_epsilon(np.transpose(samples),epsilon=eps_knn,N=4,t=3,d=d)
             
@@ -82,8 +83,8 @@ def sigma_simulation(vertex,S_range,d=4,N_sample=1000):
             samples +=  np.random.normal(scale=S, size=(d,N_sample))
 
             samples_ = get_projected_points(samples)
-            eps_proj = find_max_distance_to_average(np.transpose(samples_))/5
-            eps_knn = find_max_distance_to_average(np.transpose(samples))/5
+            eps_proj = find_max_distance_to_average(np.transpose(samples_))/M_
+            eps_knn = find_max_distance_to_average(np.transpose(samples))/M_
             X_proj_knn = compute_points_within_epsilon(np.transpose(samples_),epsilon=eps_proj,N=4,t=3,d=d)
             X_knn = compute_points_within_epsilon(np.transpose(samples),epsilon=eps_knn,N=4,t=3,d=d)
             
@@ -136,8 +137,8 @@ def N_simulation(vertex,N_range,d=4,S=1):
             samples +=  np.random.normal(scale=S, size=(d,N_))
 
             samples_ = get_projected_points(samples)
-            eps_proj = find_max_distance_to_average(np.transpose(samples_))/5
-            eps_knn = find_max_distance_to_average(np.transpose(samples))/5
+            eps_proj = find_max_distance_to_average(np.transpose(samples_))/M_
+            eps_knn = find_max_distance_to_average(np.transpose(samples))/M_
             X_proj_knn = compute_points_within_epsilon(np.transpose(samples_),epsilon=eps_proj,N=4,t=3,d=d)
             X_knn = compute_points_within_epsilon(np.transpose(samples),epsilon=eps_knn,N=4,t=3,d=d)
             
@@ -227,35 +228,35 @@ if __name__ == '__main__':
     S_range = np.linspace(0.2,2,20)
     vertex = np.array([[1,2,5],[1,4,2]])
     d_range = [2, 4, 6, 8, 10, 12]
-    max_chi2(d_range = d_range)
-    # error_knn_d, error_spa_d, error_proj_d, error_proj_knn_d = d_simulation(vertex)
-    # error_knn_s, error_spa_s, error_proj_s, error_proj_knn_s = sigma_simulation(vertex,S_range)
-    # error_knn_n, error_spa_n, error_proj_n, error_proj_knn_n = N_simulation(vertex,N_range)
+    #max_chi2(d_range = d_range)
+    error_knn_d, error_spa_d, error_proj_d, error_proj_knn_d = d_simulation(vertex)
+    error_knn_s, error_spa_s, error_proj_s, error_proj_knn_s = sigma_simulation(vertex,S_range)
+    error_knn_n, error_spa_n, error_proj_n, error_proj_knn_n = N_simulation(vertex,N_range)
 
-    # fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10,3))
-    # ax1.plot(D_range,error_knn_d,"-o",label = "KNN-SPA")
-    # ax1.plot(D_range,error_spa_d,"-o",label = "SPA")
-    # ax1.plot(D_range,error_proj_d,"-o",label = "P-SPA")
-    # ax1.plot(D_range,error_proj_knn_d,"-o",label = "P-KNN-SPA")
-    # ax1.set_xlabel("Dimension (d)")
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10,3))
+    ax1.plot(D_range,error_knn_d,"-o",label = "KNN-SPA")
+    ax1.plot(D_range,error_spa_d,"-o",label = "SPA")
+    ax1.plot(D_range,error_proj_d,"-o",label = "P-SPA")
+    ax1.plot(D_range,error_proj_knn_d,"-o",label = "P-KNN-SPA")
+    ax1.set_xlabel("Dimension (d)")
 
-    # ax2.plot(S_range,error_knn_s,"-o",label = "KNN-SPA")
-    # ax2.plot(S_range,error_spa_s,"-o",label = "SPA")
-    # ax2.plot(S_range,error_proj_s,"-o",label = "P-SPA")
-    # ax2.plot(S_range,error_proj_knn_s,"-o",label = "P-KNN-SPA")
-    # ax2.set_xlabel("Noise level (sigma)")
+    ax2.plot(S_range,error_knn_s,"-o",label = "KNN-SPA")
+    ax2.plot(S_range,error_spa_s,"-o",label = "SPA")
+    ax2.plot(S_range,error_proj_s,"-o",label = "P-SPA")
+    ax2.plot(S_range,error_proj_knn_s,"-o",label = "P-KNN-SPA")
+    ax2.set_xlabel("Noise level (sigma)")
 
-    # ax3.plot(N_range,error_knn_n,"-o",label = "KNN-SPA")
-    # ax3.plot(N_range,error_spa_n,"-o",label = "SPA")
-    # ax3.plot(N_range,error_proj_n,"-o",label = "P-SPA")
-    # ax3.plot(N_range,error_proj_knn_n,"-o",label = "P-KNN-SPA")
-    # ax3.legend()
-    # ax3.set_xlabel("Sample size (n)")
+    ax3.plot(N_range,error_knn_n,"-o",label = "KNN-SPA")
+    ax3.plot(N_range,error_spa_n,"-o",label = "SPA")
+    ax3.plot(N_range,error_proj_n,"-o",label = "P-SPA")
+    ax3.plot(N_range,error_proj_knn_n,"-o",label = "P-KNN-SPA")
+    ax3.legend()
+    ax3.set_xlabel("Sample size (n)")
 
-    # fig.text(0.0001, 0.5, 'Reconstruction error', va='center', rotation='vertical')
-    # plt.tight_layout()
-    # plt.savefig("Experiments_subplots.png")
-    # plt.show()
+    fig.text(0.0001, 0.5, 'Reconstruction error', va='center', rotation='vertical')
+    plt.tight_layout()
+    #plt.savefig("Experiments_subplots.png")
+    plt.show()
 
 
 
@@ -267,9 +268,9 @@ if __name__ == '__main__':
     # plt.ylabel("reconstruction error")
     # plt.grid()
     
-    #sigma_simulation(vertex,S_range=np.linspace(0.2,2,20))
-    #N_simulation(vertex,N_range=np.arange(500,2000,100))
-    #estimator_var(vertex,np.linspace(0.2,2,20))
+    # sigma_simulation(vertex,S_range=np.linspace(0.2,2,20))
+    # N_simulation(vertex,N_range=np.arange(500,2000,100))
+    # estimator_var(vertex,np.linspace(0.2,2,20))
 
     
     
