@@ -179,7 +179,7 @@ def N_simulation(vertex,N_range,d=4,S=1):
 
 "---------------------------- SIMULATION ESTIMATING VARIANCE ------------------------------------"
 
-def estimator_var(vertex,S_range,N_sample=5000,d=10):
+def estimator_var(vertex,S_range,N_sample=1000,d=10):
     K = vertex.shape[1]
     var_diff = []
     A = np.random.randint(2,size=(d,2))
@@ -187,8 +187,8 @@ def estimator_var(vertex,S_range,N_sample=5000,d=10):
         samples = np.dot(A,np.transpose(get_sample(N_sample = N_sample, vertex=vertex)))
         samples +=  np.random.normal(scale=S, size=(d,N_sample))
         samples_ , X_bar, mean = get_projected_points(samples,return_X=True)
-        res = X_bar - samples_ + mean
-        var_diff.append(abs(np.var(res) - S**2))
+        res = samples - samples_
+        var_diff.append((np.sum(np.linalg.norm(res,axis=0)**2)/((N_sample-1)*(d-K+1))) - S**2)
 
     plt.plot(S_range,var_diff,"-o")
     plt.xlabel("True standard deviation (sigma)")
@@ -234,28 +234,28 @@ if __name__ == '__main__':
     error_knn_n, error_spa_n, error_proj_n, error_proj_knn_n = N_simulation(vertex,N_range)
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10,3))
-    ax1.plot(D_range,error_knn_d,"-o",label = "KNN-SPA")
+    ax1.plot(D_range,error_knn_d,"-o",label = "PPSPA (step 2)")
     ax1.plot(D_range,error_spa_d,"-o",label = "SPA")
-    ax1.plot(D_range,error_proj_d,"-o",label = "P-SPA")
-    ax1.plot(D_range,error_proj_knn_d,"-o",label = "P-KNN-SPA")
+    ax1.plot(D_range,error_proj_d,"-o",label = "PPSPA (step 1)")
+    ax1.plot(D_range,error_proj_knn_d,"-o",label = "PPSPA")
     ax1.set_xlabel("Dimension (d)")
 
-    ax2.plot(S_range,error_knn_s,"-o",label = "KNN-SPA")
+    ax2.plot(S_range,error_knn_s,"-o",label = "PPSPA (step 2)")
     ax2.plot(S_range,error_spa_s,"-o",label = "SPA")
-    ax2.plot(S_range,error_proj_s,"-o",label = "P-SPA")
-    ax2.plot(S_range,error_proj_knn_s,"-o",label = "P-KNN-SPA")
+    ax2.plot(S_range,error_proj_s,"-o",label = "PPSPA (step 1)")
+    ax2.plot(S_range,error_proj_knn_s,"-o",label = "PPSPA")
     ax2.set_xlabel("Noise level (sigma)")
 
-    ax3.plot(N_range,error_knn_n,"-o",label = "KNN-SPA")
+    ax3.plot(N_range,error_knn_n,"-o",label = "PPSPA (step 2)")
     ax3.plot(N_range,error_spa_n,"-o",label = "SPA")
-    ax3.plot(N_range,error_proj_n,"-o",label = "P-SPA")
-    ax3.plot(N_range,error_proj_knn_n,"-o",label = "P-KNN-SPA")
+    ax3.plot(N_range,error_proj_n,"-o",label = "PPSPA (step 1)")
+    ax3.plot(N_range,error_proj_knn_n,"-o",label = "PPSPA")
     ax3.legend()
     ax3.set_xlabel("Sample size (n)")
 
     fig.text(0.0001, 0.5, 'Reconstruction error', va='center', rotation='vertical')
     plt.tight_layout()
-    #plt.savefig("Experiments_subplots.png")
+    plt.savefig("Experiments_subplots.png")
     plt.show()
 
 
@@ -270,7 +270,7 @@ if __name__ == '__main__':
     
     # sigma_simulation(vertex,S_range=np.linspace(0.2,2,20))
     # N_simulation(vertex,N_range=np.arange(500,2000,100))
-    # estimator_var(vertex,np.linspace(0.2,2,20))
+    #estimator_var(vertex,np.linspace(0.2,2,20))
 
     
     
