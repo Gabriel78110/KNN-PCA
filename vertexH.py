@@ -86,7 +86,6 @@ def compute_points_within_epsilon(point_cloud, epsilon, N,t,d=2):
 
         # Append the average neighbor to the filtered list
         filtered_points.append(avg_neighbor)
-
     return np.array(filtered_points).reshape(-1,d)
 
 # Compute the pairing of points with the minimum Euclidean distance

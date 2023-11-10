@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 M_ = 5
-
+N_sim = 5
 "---------------------------- SIMULATION DIMENSION ------------------------------------"
 
 def d_simulation(vertex,D=10,S=1,N_sample=1000):
@@ -19,13 +19,12 @@ def d_simulation(vertex,D=10,S=1,N_sample=1000):
 
     for d in np.arange(2,D):
         e_knn, e_spa, e_proj_knn, e_proj = [], [], [], []
-        for _ in range(5):
+        for _ in range(N_sim):
             A = np.random.randint(2,size=(d,2))
             vertex_d = np.dot(A,vertex)
             samples = np.dot(A,np.transpose(get_sample(N_sample = N_sample, vertex=vertex)))
             samples +=  np.random.normal(scale=S, size=(d,N_sample))
-
-            samples_ = get_projected_points(samples)
+            samples_ = get_projected_points(samples,low_dim=False)
             eps_proj = find_max_distance_to_average(np.transpose(samples_))/M_
             eps_knn = find_max_distance_to_average(np.transpose(samples))/M_
             X_proj_knn = compute_points_within_epsilon(np.transpose(samples_),epsilon=eps_proj,N=4,t=3,d=d)
@@ -75,7 +74,7 @@ def sigma_simulation(vertex,S_range,d=4,N_sample=1000):
 
     for S in S_range:
         e_knn, e_spa, e_proj_knn, e_proj = [], [], [], []
-        for _ in range(5):
+        for _ in range(N_sim):
             #A = np.random.randint(2,size=(d,2))
             A = np.eye(d,2)
             vertex_d = np.dot(A,vertex)
@@ -129,7 +128,7 @@ def N_simulation(vertex,N_range,d=4,S=1):
 
     for N_ in N_range:
         e_knn, e_spa, e_proj, e_proj_knn = [], [], [], []
-        for _ in range(5):
+        for _ in range(N_sim):
             #A = np.random.randint(2,size=(d,2))
             A = np.eye(d,2)
             vertex_d = np.dot(A,vertex)
@@ -163,17 +162,6 @@ def N_simulation(vertex,N_range,d=4,S=1):
         error_proj_knn.append(np.mean(e_proj_knn))
 
     return error_knn, error_spa, error_proj, error_proj_knn
-    # plt.figure(figsize=(8,5))
-    # plt.plot(N_range,error_knn,"-o",label = "KNN-SPA")
-    # plt.plot(N_range,error_proj,"-o",label = "P-SPA")
-    # plt.plot(N_range,error_spa,"-o",label = "SPA")
-    # plt.plot(N_range,error_proj_knn,"-o",label = "P-KNN-SPA")
-    # plt.legend()
-    # plt.xlabel("Sample size (n)")
-    # plt.ylabel("reconstruction error")
-    # plt.grid()
-    # plt.savefig("N.png")
-    # plt.show()
 
 
 
@@ -234,43 +222,30 @@ if __name__ == '__main__':
     error_knn_n, error_spa_n, error_proj_n, error_proj_knn_n = N_simulation(vertex,N_range)
 
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10,3))
-    ax1.plot(D_range,error_knn_d,"-o",label = "PPSPA (step 2)")
     ax1.plot(D_range,error_spa_d,"-o",label = "SPA")
-    ax1.plot(D_range,error_proj_d,"-o",label = "PPSPA (step 1)")
-    ax1.plot(D_range,error_proj_knn_d,"-o",label = "PPSPA")
+    ax1.plot(D_range,error_proj_d,"-o",label = "P-SPA")
+    ax1.plot(D_range,error_knn_d,"-o",label = "D-SPA")
+    ax1.plot(D_range,error_proj_knn_d,"-o",label = "pp-SPA")
+    ax1.legend(loc="upper left")
     ax1.set_xlabel("Dimension (d)")
 
-    ax2.plot(S_range,error_knn_s,"-o",label = "PPSPA (step 2)")
+    
     ax2.plot(S_range,error_spa_s,"-o",label = "SPA")
-    ax2.plot(S_range,error_proj_s,"-o",label = "PPSPA (step 1)")
+    ax2.plot(S_range,error_proj_s,"-o",label = "PPSPA (only step 1)")
+    ax2.plot(S_range,error_knn_s,"-o",label = "PPSPA (only step 2)")
     ax2.plot(S_range,error_proj_knn_s,"-o",label = "PPSPA")
+    #ax2.legend(loc="upper left")
     ax2.set_xlabel("Noise level (sigma)")
 
-    ax3.plot(N_range,error_knn_n,"-o",label = "PPSPA (step 2)")
+    
     ax3.plot(N_range,error_spa_n,"-o",label = "SPA")
-    ax3.plot(N_range,error_proj_n,"-o",label = "PPSPA (step 1)")
-    ax3.plot(N_range,error_proj_knn_n,"-o",label = "PPSPA")
-    ax3.legend()
+    ax3.plot(N_range,error_proj_n,"-o",label = "P-SPA")
+    ax3.plot(N_range,error_knn_n,"-o",label = "D-SPA")
+    ax3.plot(N_range,error_proj_knn_n,"-o",label = "pp-SPA")
     ax3.set_xlabel("Sample size (n)")
 
     fig.text(0.0001, 0.5, 'Reconstruction error', va='center', rotation='vertical')
     plt.tight_layout()
-    plt.savefig("Experiments_subplots.png")
+    plt.savefig("experiments_subplots.png")
     plt.show()
 
-
-
-    # plt.plot(N_range,error_proj,"-o",label = "P-SPA")
-    # plt.plot(N_range,error_spa,"-o",label = "SPA")
-    # plt.plot(N_range,error_proj_knn,"-o",label = "P-KNN-SPA")
-    # plt.legend()
-    # plt.xlabel("Sample size (n)")
-    # plt.ylabel("reconstruction error")
-    # plt.grid()
-    
-    # sigma_simulation(vertex,S_range=np.linspace(0.2,2,20))
-    # N_simulation(vertex,N_range=np.arange(500,2000,100))
-    #estimator_var(vertex,np.linspace(0.2,2,20))
-
-    
-    
