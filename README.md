@@ -1,4 +1,4 @@
 # VertexHunting
 
-# To reproduce the experiments run python experiments.py
+## To reproduce the experiments run python experiments.py
 
