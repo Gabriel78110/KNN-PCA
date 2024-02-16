@@ -11,4 +11,5 @@ To reproduce the experiments from our paper, run:
 ```bash
 python experiments.py
 
+For more details, refer to our [ICLR 2024 paper](link-to-paper) and [code repository](link-to-repository).
 
