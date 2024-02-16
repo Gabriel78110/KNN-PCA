@@ -1,12 +1,14 @@
-# This is the repository of our ICLR2024 paper Improved algorithm and bounds for successive projection.
+# Improved Algorithm and Bounds for Successive Projection
 
-## Problem setup: 
+## Problem Setup
 
-Given some noisy observations from a K-1 diemensional simplex in d-dimension, the goal of vertex hunting is to recover the K vertices of the simplex. One common approach is the classical Successive Projection Algorithm (SPA)  (Araújo et. al 2001) which is an iterative greedy approach sensitive to outliers and affected by the dimension d. We propose a new aproach called pseudo-point SPA (ppSPA) that leverages a projection step together with a KNN denoise step to improve on the traditional SPA. We show that our method performs much better in practise and derive sharper and faster theoretical bounds.
+Given noisy observations from a (K-1)-dimensional simplex in d-dimensions, the goal of vertex hunting is to recover the K vertices of the simplex. We propose a new approach called Pseudo-point SPA (ppSPA), which leverages a projection step together with a KNN denoise step to improve on the traditional SPA. Our method performs better in practice and yields sharper and faster theoretical bounds.
 
+## Reproducing Experiments
 
-- To reproduce the experiments from our paper run: python experiments.py
+To reproduce the experiments from our paper, run:
 
+```bash
+python experiments.py
 
-- spa.py contains the code for the orthodox spa (Araújo et. al 2001)
 
