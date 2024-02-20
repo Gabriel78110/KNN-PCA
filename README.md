@@ -1,6 +1,6 @@
 # Improved Algorithm and Bounds for Successive Projection
 
-This is the repository for our paper <span style="color:blue; font-weight:bold;">"Improved algorithm and bounds for successive projection"</span> published at **<span style="color:blue;">ICLR 2024</span>**.
+This is the repository for our paper **"Improved algorithm and bounds for successive projection"** published at **ICLR 2024**.
 
 ## Problem Setup
 
